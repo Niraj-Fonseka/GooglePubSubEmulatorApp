@@ -8,7 +8,18 @@ FROM golang:alpine
 
  RUN curl -sSL https://sdk.cloud.google.com | bash
 
+ RUN gcloud components install pubsub-emulator
+
+ RUN gcloud components update
+
+ RUN gcloud beta emulators pubsub start &
+ 
  ENV PATH $PATH:/root/google-cloud-sdk/bin
 
+ ADD . $GOPATH/src/PubSubEmulatorApp
 
- RUN echo $PATH
+ WORKDIR $GOPATH/src/PubSubEmulatorApp
+
+ RUN cd  $GOPATH/src/PubSubEmulatorApp; go build -o pubsubapp
+
+ ENTRYPOINT [ "./pubsubapp" ]
